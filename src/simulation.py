@@ -10,7 +10,7 @@ class Simulation:
         self.screen=pygame.display.set_mode((0,0),pygame.FULLSCREEN)
         self.dimension=self.screen.get_size()
         self.clock=pygame.time.Clock()
-        self.entities=[entity.Entity((random.randint(0,self.dimension[0]),random.randint(0,self.dimension[1])),(200,150,100),genome.Genome('lions',5,10,10,5)) for i in range(100)]
+        self.entities=[entity.Entity((random.randint(0,self.dimension[0]),random.randint(0,self.dimension[1])),(200,150,100),genome.Genome('lions',5,100,10,5)) for i in range(200)]
         self.colour=(100,100,100)
         self.fps=60
         # test variable for now
@@ -25,9 +25,8 @@ class Simulation:
             self.ballpos[0]-=5
         if(events[4]):
             self.ballpos[0]+=5
-        self.colour=((self.colour[0]+random.randint(-10,10))%256,(self.colour[1]+random.randint(-10,10))%256,(self.colour[2]+random.randint(-10,10))%256)
         for entity in self.entities:
-            entity.update(self.entities,self.fps)#since i havent created it yet let entities be empty
+            entity.update(self.entities,self.fps,self.dimension)#since i havent created it yet let entities be empty
 
         return events[0]
     def listen_events(self):
@@ -40,12 +39,11 @@ class Simulation:
         return [ running, keys[pygame.K_UP], keys[pygame.K_LEFT], keys[pygame.K_DOWN], keys[pygame.K_RIGHT]]
     def draw(self):
         self.screen.fill(self.colour)
-
-        pygame.draw.circle(self.screen,"#041eb3",self.ballpos,50)
         for entity in self.entities:
             kid=entity.draw(self.screen)
             if(kid):
                 self.entities.append(kid)
+        self.screen.blit(pygame.font.SysFont(None, 36).render(f"entities:{len(self.entities)}", True, (255, 200, 200)),(50,50))
         pygame.display.flip()
     def mainloop(self):
         running=True
