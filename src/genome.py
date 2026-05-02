@@ -20,7 +20,7 @@ class Genome:
         return max(0, random.gauss(mean, variation))
 
     def can_reproduce(self, partner:'Genome'):
-        """Checks if reproduction is possible (distance + energy + age)."""
+        """Checks if reproduction is possible (energy + age)."""
         # Ensure both parents have enough energy and are mature
         if self.energy < 20 or partner.energy < 20:
             return False

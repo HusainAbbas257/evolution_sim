@@ -1,15 +1,16 @@
 import pygame 
 import random
+from src import entity,genome
 pygame.init()
 
 
 
 class Simulation:
     def __init__(self):
-        self.entities=[]
         self.screen=pygame.display.set_mode((0,0),pygame.FULLSCREEN)
         self.dimension=self.screen.get_size()
         self.clock=pygame.time.Clock()
+        self.entities=[entity.Entity((random.randint(0,self.dimension[0]),random.randint(0,self.dimension[1])),(200,150,100),genome.Genome('lions',5,10,10,5)) for i in range(100)]
         self.colour=(100,100,100)
         self.fps=60
         # test variable for now
@@ -26,7 +27,7 @@ class Simulation:
             self.ballpos[0]+=5
         self.colour=((self.colour[0]+random.randint(-10,10))%256,(self.colour[1]+random.randint(-10,10))%256,(self.colour[2]+random.randint(-10,10))%256)
         for entity in self.entities:
-            entity.update()#since i havent created it yet let entities be empty
+            entity.update(self.entities,self.fps)#since i havent created it yet let entities be empty
 
         return events[0]
     def listen_events(self):
@@ -42,7 +43,9 @@ class Simulation:
 
         pygame.draw.circle(self.screen,"#041eb3",self.ballpos,50)
         for entity in self.entities:
-            entity.draw()
+            kid=entity.draw(self.screen)
+            if(kid):
+                self.entities.append(kid)
         pygame.display.flip()
     def mainloop(self):
         running=True
