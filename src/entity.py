@@ -2,6 +2,8 @@ from src import genome
 import pygame
 import math
 import random
+from src.tree import Tree
+
 class Entity:
     def __init__(self,pos,colour,genom:genome.Genome):
         self.genome=genom
@@ -15,16 +17,29 @@ class Entity:
         # reproduction cooldown
         self.cooldown=0
 
-    def get_state(self, others: list['Entity']):
+        self.target_tree=None
+
+    def get_state(self, others: list['Entity'],tree_list:list['Tree']):
+        #priority --> eat>reproduce>wander
+        
         if self.state == "reproduce":
             if not self.partner:
                 self.state = ""
                 return
             return
 
-        if self.state == "wander":
+        if self.state == "wander" or self.state == "eat":
             return
-        if(self.cooldown>5):
+        
+        if self.genome.energy<75:
+            for tree in tree_list:
+                if math.dist(self.pos, tree.pos) <= self.genome.vision and len(tree.apples)>0 :
+                    self.destiny =tree.apples[0]
+                    self.state = "eat"
+                    self.target_tree = tree
+                    return
+
+        if(self.cooldown>2.5):
             for other in others:
                 if(self!=other):
                     if(math.dist(self.pos,other.pos)<=self.genome.vision):
@@ -48,6 +63,14 @@ class Entity:
         if self.state=='wander':
             self.state=""
             return None
+
+        if self.state=='eat': 
+            if(math.dist(self.pos, self.destiny) <= self.genome.size+self.target_tree.size and self.destiny in self.target_tree.apples):
+                self.genome.energy+=30
+                self.state=""
+                self.target_tree.apples.pop(self.target_tree.apples.index(self.destiny))
+                self.target_tree=None
+                return 
 
         # only here for reproduce state
 
@@ -79,15 +102,15 @@ class Entity:
 
 
         
-    def update(self,others:list['Entity'],fps=60,dims=(1200,756)):
-        self.get_state(others)
+    def update(self,others:list['Entity'],tree_list:list['Tree'],fps=60,dims=(1200,756)):
+        self.get_state(others, tree_list)
         self.destiny=(min(max(self.destiny[0],0),dims[0]),min(max(self.destiny[1],0),dims[1]))
         dx, dy = self.destiny[0]-self.pos[0], self.destiny[1]-self.pos[1]
         dist = (dx*dx + dy*dy)**0.5
         if dist > 0:
             step = min(self.genome.speed, dist) #learning from my mistakes this avoids jitter
             self.pos = (self.pos[0] + dx/dist*step, self.pos[1] + dy/dist*step)
-        self.genome.energy-=2*(1/fps)
+        self.genome.energy-=self.genome.size*(1/fps)  #obese ones get tired faster
         self.genome.age+=(1/fps)
         self.cooldown+=(1/fps)
         self.pos=(min(max(self.pos[0],0),dims[0]),min(max(self.pos[1],0),dims[1]))
