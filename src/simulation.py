@@ -10,7 +10,7 @@ class Simulation:
         self.screen=pygame.display.set_mode((0,0),pygame.FULLSCREEN)
         self.dimension=self.screen.get_size()
         self.clock=pygame.time.Clock()
-        self.entities=[entity.Entity((random.randint(0,self.dimension[0]),random.randint(0,self.dimension[1])),(200,150,100),genome.Genome('lions',5,100,10,5)) for i in range(200)]
+        self.entities=[entity.Entity((random.randint(0,self.dimension[0]),random.randint(0,self.dimension[1])),(200,150,100),genome.Genome('lions',5,random.uniform(15,25),random.uniform(5,15),random.uniform(5,7))) for i in range(50)]
         self.colour=(100,100,100)
         self.fps=60
         # test variable for now
@@ -25,8 +25,12 @@ class Simulation:
             self.ballpos[0]-=5
         if(events[4]):
             self.ballpos[0]+=5
-        for entity in self.entities:
-            entity.update(self.entities,self.fps,self.dimension)#since i havent created it yet let entities be empty
+        for entity in self.entities[:]:
+            kid=entity.update(self.entities,self.fps,self.dimension)#since i havent created it yet let entities be empty
+            if(kid):
+                self.entities.append(kid)
+            if(not entity.alive):
+                self.entities.remove(entity)
 
         return events[0]
     def listen_events(self):

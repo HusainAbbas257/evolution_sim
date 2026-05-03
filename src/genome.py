@@ -42,6 +42,8 @@ class Genome:
         # Reduce parent energy after reproduction
         self.energy -= 10
         partner.energy -= 10
+        self.age += 1
+        partner.age += 1
         return child
     def __str__(self):
         varss=vars(self)
