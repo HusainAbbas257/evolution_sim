@@ -12,7 +12,7 @@ class Simulation:
         self.screen=pygame.display.set_mode((0,0),pygame.FULLSCREEN)
         self.dimension=self.screen.get_size()
         self.clock=pygame.time.Clock()
-        self.entities=[entity.Entity((random.randint(0,self.dimension[0]),random.randint(0,self.dimension[1])),(200,150,100),genome.Genome('lions',1,random.uniform(25,50),random.uniform(50,150),random.uniform(5,7))) for i in range(100)]
+        self.entities=[entity.Entity((random.randint(0,self.dimension[0]),random.randint(0,self.dimension[1])),(200,150,100),genome.Genome('lions',5,20,50,6)) for i in range(150)]
         self.trees=[tree.Tree((random.randint(0,self.dimension[0]),random.randint(0,self.dimension[1]))) for i in range(25)]
         self.colour=(100,100,100)
         self.fps=60
@@ -34,8 +34,12 @@ class Simulation:
                 self.entities.append(kid)
             if(not entit.alive):
                 self.entities.remove(entit)
-        for tree in self.trees:
-            tree.update()
+        for tre in self.trees:
+            output=tre.update()
+            if(isinstance(output,tree.Tree)):
+                self.trees.append(output)
+            elif output:
+                self.trees.remove(tre)
 
         return events[0]
     def listen_events(self):

@@ -16,8 +16,10 @@ class Entity:
         self.alive=True
         # reproduction cooldown
         self.cooldown=0
-
         self.target_tree=None
+
+        # basic memory to remember where the tlast tree was
+        self.last_tree_pos=None
 
     def get_state(self, others: list['Entity'],tree_list:list['Tree']):
         #priority --> eat>reproduce>wander
@@ -37,7 +39,13 @@ class Entity:
                     self.destiny =tree.apples[0]
                     self.state = "eat"
                     self.target_tree = tree
+                    self.last_tree_pos=tree.pos
                     return
+            # now go  back to the last tree if there is none near
+            if self.last_tree_pos:
+                self.destiny=self.last_tree_pos
+                self.state='eat'
+                return
 
         if(self.cooldown>2.5):
             for other in others:
@@ -65,6 +73,9 @@ class Entity:
             return None
 
         if self.state=='eat': 
+            if not self.target_tree:
+                self.state=""
+                return None
             if(math.dist(self.pos, self.destiny) <= self.genome.size+self.target_tree.size and self.destiny in self.target_tree.apples):
                 self.genome.energy+=30
                 self.state=""
@@ -113,6 +124,9 @@ class Entity:
         self.genome.energy-=self.genome.size*(1/fps)  #obese ones get tired faster
         self.genome.age+=(1/fps)
         self.cooldown+=(1/fps)
+        # blur memory a little
+        if self.last_tree_pos:
+            self.last_tree_pos=(self.last_tree_pos[0]+random.randint(-5,5),self.last_tree_pos[1]+random.randint(-5,5))
         self.pos=(min(max(self.pos[0],0),dims[0]),min(max(self.pos[1],0),dims[1]))
         if self.genome.energy<=0 or self.genome.age>=self.genome.max_age:
             self.alive=False
