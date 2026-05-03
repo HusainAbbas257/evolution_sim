@@ -1,6 +1,6 @@
 import pygame 
 import random
-from src import entity,genome
+from src import entity,genome,tree
 pygame.init()
 
 
@@ -11,6 +11,7 @@ class Simulation:
         self.dimension=self.screen.get_size()
         self.clock=pygame.time.Clock()
         self.entities=[entity.Entity((random.randint(0,self.dimension[0]),random.randint(0,self.dimension[1])),(200,150,100),genome.Genome('lions',5,random.uniform(15,25),random.uniform(5,15),random.uniform(5,7))) for i in range(50)]
+        self.trees=[tree.Tree((random.randint(0,self.dimension[0]),random.randint(0,self.dimension[1]))) for i in range(10)]
         self.colour=(100,100,100)
         self.fps=60
         # test variable for now
@@ -31,6 +32,8 @@ class Simulation:
                 self.entities.append(kid)
             if(not entity.alive):
                 self.entities.remove(entity)
+        for tree in self.trees:
+            tree.update()
 
         return events[0]
     def listen_events(self):
@@ -47,6 +50,9 @@ class Simulation:
             kid=entity.draw(self.screen)
             if(kid):
                 self.entities.append(kid)
+        for tree in self.trees:
+            tree.draw(self.screen)
+        
         self.screen.blit(pygame.font.SysFont(None, 36).render(f"entities:{len(self.entities)}", True, (255, 200, 200)),(50,50))
         pygame.display.flip()
     def mainloop(self):
