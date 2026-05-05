@@ -12,7 +12,7 @@ class Simulation:
         self.screen=pygame.display.set_mode((0,0),pygame.FULLSCREEN)
         self.dimension=self.screen.get_size()
         self.clock=pygame.time.Clock()
-        self.entities=[entity.Entity((random.randint(0,self.dimension[0]),random.randint(0,self.dimension[1])),(200,150,100),genome.Genome('lions',5,20,50,6)) for i in range(150)]
+        self.entities=[entity.Entity((random.randint(0,self.dimension[0]),random.randint(0,self.dimension[1])),(200,150,100),genome.Genome('lions',5,75,75,6)) for i in range(150)]
         self.trees=[tree.Tree((random.randint(0,self.dimension[0]),random.randint(0,self.dimension[1]))) for i in range(25)]
         self.colour=(100,100,100)
         self.fps=60
@@ -60,6 +60,8 @@ class Simulation:
             tree.draw(self.screen)
         
         self.screen.blit(pygame.font.SysFont(None, 36).render(f"entities:{len(self.entities)}", True, (255, 200, 200)),(50,50))
+        self.screen.blit(pygame.font.SysFont(None, 36).render(f"fps:{self.clock.get_fps():.1f}", True, (255, 200, 200)),(50,80))
+        
         pygame.display.flip()
     def mainloop(self):
         running=True

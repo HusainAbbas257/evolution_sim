@@ -15,16 +15,20 @@ class Tree:
         self.age+=(1/fps)
         self.cooldown+=(1/fps)
         if(self.cooldown>=3):
-            if len(self.apples)<3:
+            if len(self.apples)<5:
                 self.give_apple()
+                self.age+=1
                 self.cooldown=0
             else:
-                # make a new tree and die
-                return self.new_tree()
-        return self.age>60
+                if(self.cooldown>10):
+                    self.cooldown=0
+                    # make a new tree
+                    self.age+=10
+                    return self.new_tree()
+        return self.age>75
 
     def new_tree(self):
-        r = max(self.range * (random.random())**0.5,self.size*3)
+        r = max(self.range * (random.random())**0.5,self.size*5)
         theta = random.uniform(0, 2*math.pi)
         new_pos = (int(self.pos[0] + r*math.cos(theta)), int(self.pos[1] + r*math.sin(theta)))
         self.cooldown=0
