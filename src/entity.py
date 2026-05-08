@@ -33,6 +33,23 @@ class Entity:
         if self.state == "wander" or self.state == "eat":
             return
         
+        # do or die case :
+        if self.genome.energy<=5:
+            # dont check distance just rush to nearest tree
+                nearest_tree=None
+                nearest_dist=float('inf')
+                for tree in tree_list:
+                    dist=math.dist(self.pos, tree.pos)
+                    if dist<nearest_dist and len(tree.apples)>0:
+                        nearest_tree=tree
+                        nearest_dist=dist
+                if nearest_tree:
+                    self.destiny=nearest_tree.apples[0]
+                    self.state='eat'
+                    self.target_tree=nearest_tree
+                    self.last_tree_pos=nearest_tree.pos
+                    return
+                
         if self.genome.energy<75:
             for tree in tree_list:
                 if math.dist(self.pos, tree.pos) <= self.genome.vision and len(tree.apples)>0 :
@@ -124,10 +141,15 @@ class Entity:
         self.genome.energy-=self.genome.size*(1/fps)  #obese ones get tired faster
         self.genome.age+=(1/fps)
         self.cooldown+=(1/fps)
-        # blur memory a little
         if self.last_tree_pos:
             self.last_tree_pos=(self.last_tree_pos[0]+random.randint(-5,5),self.last_tree_pos[1]+random.randint(-5,5))
-        self.pos=(min(max(self.pos[0],0),dims[0]),min(max(self.pos[1],0),dims[1]))
+        original=self.pos
+        if(self.pos[0]<0 or self.pos[0]>dims[0] or self.pos[1]<0 or self.pos[1]>dims[1]):
+            self.pos=(min(max(self.pos[0],0),dims[0]),min(max(self.pos[1],0),dims[1]))
+        
+        if(self.pos!=original):
+            return self.update(others,tree_list,fps,dims)
+        
         if self.genome.energy<=0 or self.genome.age>=self.genome.max_age:
             self.alive=False
             return None

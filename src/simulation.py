@@ -12,8 +12,8 @@ class Simulation:
         self.screen=pygame.display.set_mode((0,0),pygame.FULLSCREEN)
         self.dimension=self.screen.get_size()
         self.clock=pygame.time.Clock()
-        self.entities=[entity.Entity((random.randint(0,self.dimension[0]),random.randint(0,self.dimension[1])),(200,150,100),genome.Genome('lions',5,75,75,6)) for i in range(50)]
-        self.trees=[tree.Tree((random.randint(0,self.dimension[0]),random.randint(0,self.dimension[1]))) for i in range(50)]
+        self.entities=[entity.Entity((random.randint(0,self.dimension[0]),random.randint(0,self.dimension[1])),(200,150,100),genome.Genome('lions',random.randint(3,7),random.randint(50,100),random.randint(50,100),6)) for i in range(10)]
+        self.trees=[tree.Tree((random.randint(0,self.dimension[0]),random.randint(0,self.dimension[1]))) for i in range(100)]
         self.colour=(100,100,100)
         self.fps=60
         # test variable for now
@@ -43,7 +43,7 @@ class Simulation:
             if(not entit.alive):
                 self.entities.remove(entit)
         for tre in self.trees:
-            output=tre.update()
+            output=tre.update(self.dimension,self.fps)
             data['trees']+=1
             data['avg_apples']+=len(tre.apples)
             if(isinstance(output,tree.Tree)):
