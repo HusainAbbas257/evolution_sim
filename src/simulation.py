@@ -13,7 +13,7 @@ class Simulation:
         self.dimension=self.screen.get_size()
         self.clock=pygame.time.Clock()
         self.entities=[entity.Entity((random.randint(0,self.dimension[0]),random.randint(0,self.dimension[1])),(200,150,100),genome.Genome('lions',random.randint(3,7),random.randint(50,100),random.randint(50,100),6)) for i in range(10)]
-        self.trees=[tree.Tree((random.randint(0,self.dimension[0]),random.randint(0,self.dimension[1]))) for i in range(100)]
+        self.trees=[tree.Tree((random.randint(0,self.dimension[0]),random.randint(0,self.dimension[1]))) for i in range(50)]
         self.colour=(100,100,100)
         self.fps=60
         # test variable for now
@@ -79,6 +79,7 @@ class Simulation:
         
         self.screen.blit(pygame.font.SysFont(None, 36).render(f"entities:{len(self.entities)}", True, (255, 200, 200)),(50,50))
         self.screen.blit(pygame.font.SysFont(None, 36).render(f"fps:{self.clock.get_fps():.1f}", True, (255, 200, 200)),(50,80))
+        self.screen.blit(pygame.font.SysFont(None, 36).render(f"trees:{len(self.trees)}", True, (255, 200, 200)),(50,110))
         
         pygame.display.flip()
     def mainloop(self):

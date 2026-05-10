@@ -11,18 +11,19 @@ class Tree:
         self.range=10
         self.size=10
         self.age=0
-        self.max_age=random.randint(20,60)
+        self.max_age=random.randint(30,75)
         self.max_apples=random.randint(1,7)
+        self.max_cd=random.randint(1,10)
     def update(self,dims,fps):
         self.age+=(1/fps)
         self.cooldown+=(1/fps)
-        if(self.cooldown>=3):
+        if(self.cooldown>=self.max_cd):
             if len(self.apples)<self.max_apples:
                 self.give_apple()
                 self.age+=1
                 self.cooldown=0
             else:
-                if(self.cooldown>7.5):
+                if(self.cooldown>2*self.max_cd):
                     self.cooldown=0
                     # make a new tree
                     self.age+=10
